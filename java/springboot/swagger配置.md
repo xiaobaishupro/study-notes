@@ -23,7 +23,6 @@ public class SwaggerConfig {
         // 创建一个 swagger 的 bean 实例
         return new Docket(DocumentationType.SWAGGER_2)
                 // 配置基本信息
-                 return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.xj"))    //这个是重点

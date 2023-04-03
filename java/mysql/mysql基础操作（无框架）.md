@@ -1,6 +1,6 @@
 
 
-### mysql基础操作（无框架）
+### java中mysql基础操作（无框架）
 
 createStatement()：
 
@@ -21,6 +21,8 @@ statement.close();
 connection.close();
 ```
 
+prepareStatement
+
 ```java
 Class.forName("com.mysql.jdbc.Driver");
 String url = "jdbc:mysql://localhost:3306/study_xj?useSSL=true";
@@ -38,3 +40,4 @@ while (resultSet.next()) {
 statement.close();
 connection.close();
 ```
+
