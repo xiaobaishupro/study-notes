@@ -1,8 +1,9 @@
 # 注解@Slf4j的简单使用教程
 
-@Slf4j可以不用每次都在类的最前边写上：
-private static final Logger logger = LoggerFactory.getLogger(this.XXX.class);
+@Slf4j可以不用每次都在类的最前边写上：private static final Logger logger = LoggerFactory.getLogger(this.XXX.class);
 我们只需要在类前面添加注解@Slf4j，即可使用log日志的功能了
+
+使用的是log4j2
 
 依赖：
 
@@ -18,6 +19,18 @@ private static final Logger logger = LoggerFactory.getLogger(this.XXX.class);
     <artifactId>lombok</artifactId>
     <version>1.18.22</version>
 </dependency>
+```
+
+排除logback
+
+```xml
+<exclusions>
+    		<!-- 排除以下依赖 -->
+        <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+        </exclusion>
+    </exclusions>
 ```
 
 log4j.properties
@@ -48,3 +61,5 @@ log4j.appender.E.Threshold = ERROR
 log4j.appender.E.layout = org.apache.log4j.PatternLayout
 log4j.appender.E.layout.ConversionPattern = %-d{yyyy-MM-dd HH:mm:ss}  [ %t:%r ] - [ %p ]  %m%n
 ```
+
+使用logback无需多配置
