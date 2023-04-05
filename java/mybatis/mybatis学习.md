@@ -160,6 +160,63 @@ SQL 映射文件只有很少的几个顶级元素（按照应被定义的顺序�
 
 模板：
 
+if
+
+```xml
+<select id="getList" resultType="com.example.mybatis_plus.entity.Person" parameterType="com.example.mybatis_plus.entity.Person">
+    select * from person
+    <where>
+        <if test="personName != null and personName != ''">
+            and person_name like concat('%',#{personName},'%')
+        </if>
+        <if test="personEmail != null and personEmail != ''">
+            and person_email like concat('%',#{personEmail},'%')
+        </if>
+    </where>
+</select>
+```
+
+choose
+
+```xml
+<select id="getList1" resultType="com.example.mybatis_plus.entity.Person"
+        parameterType="com.example.mybatis_plus.entity.Person">
+    select * from person
+    <where>
+        <choose>
+            <when test="personName != null and personName != ''">
+                and person_name like concat('%',#{personName},'%')
+            </when>
+            <when test="personEmail != null and personEmail != ''">
+                and person_email like concat('%',#{personEmail},'%')
+            </when>
+            <otherwise>
+                and 1=0;
+            </otherwise>
+        </choose>
+    </where>
+```
+
+set
+
+```xml
+<update id="update">
+    update person
+    <set>
+        <if test="personName != null and personName != ''">
+            person_name = #{personName},
+        </if>
+        <if test="personAge != null and personAge != ''">
+            person_Age =#{personAge},
+        </if>
+        <if test="personEmail != null and personEmail != ''">
+            person_email =#{personEmail},
+        </if>
+    </set>
+      where person_id = #{personId}
+</update>
+```
+
 详细学习：https://mybatis.org/mybatis-3/zh/dynamic-sql.html
 
 ##### 5.sqlsession
@@ -174,7 +231,7 @@ SqlSession是一个会话，相当于JDBC中的一个Connection对象，是整�
 
 ### mybatis提升
 
-##### spring Mybatis的三种mappers注册方式
+##### 1.spring Mybatis的三种mappers注册方式
 
 - 第一种注册方式（每一个xml文件都在核心配置文件中注册）
 
@@ -232,3 +289,45 @@ springboot中注册mapper
 >
 > #mapper文件的自定义位置
 > mybatis.mapper-locations=classpath:mapper/*.xml
+
+##### 2.mybatis缓存
+
+**一级缓存**：SqlSession级别的缓存，缓存的数据只在SqlSession内有效。
+
+如果sqlSession去执行commit操作（插入、更新、删除），会清除当前sqlsession一级缓存。
+
+默认开启一级缓存。
+
+关闭：
+
+```xml
+<setting name="localCacheScope" value="STATEMENT"/>
+```
+
+**二级缓存**：mapper级别的缓存，同一个namespace公用这一个缓存，所以对SqlSession是共享的，二级缓存需要我们手动开启。
+
+1.在 mybatis-config.xml 的配置文件中进行显示配置
+
+```xml
+<settings>
+      <!--显示的开启全局缓存-->
+      <setting name="cacheEnabled" value="true"/>
+</settings>
+
+```
+
+2.在 Mapper.xml 文件中添加cache标签
+
+```xml
+<!--在当前 Mapper.xml文件开启二级缓存-->
+<cache/>
+```
+
+3.在mapper接口上添加**@CacheNamespace**
+
+**总结**：
+
+- 二级缓存是基于namespace级别的，在同一个Mapper下有效
+- 所有的数据都会先放在一级缓存中
+- 只有当会话提交或关闭时，才会提交到二级缓存中
+- 当 Mybatis 调用 Dao 层查询数据库时，先查询二级缓存，二级缓存中无对应数据，再去查询一级缓存，一级缓存中也没有，最后去数据库查找。

@@ -1,4 +1,8 @@
-### springSecurity
+### springsecurity入门
+
+
+
+### springSecurity学习
 
 https://juejin.cn/post/7106300827035238407
 
@@ -105,6 +109,4 @@ public interface AuthenticationManager {
  \2. 👉经过`AuthenticationManager`的认证，
  \3. 👉再通过`SecurityContextHolder`获取`SecurityContext`，
 \4. 👉最后将认证后的信息放入到`SecurityContext`。
-
-
 
