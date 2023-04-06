@@ -143,7 +143,18 @@ SQL 映射文件只有很少的几个顶级元素（按照应被定义的顺序�
 
 - `select` – 映射查询语句。
 
-  详细学习：https://mybatis.org/mybatis-3/zh/sqlmap-xml.html
+映射
+
+```xml
+<resultMap id="personResultMap" type="com.example.mybatis_plus.entity.Person">
+    <id property="personId" column="person_id"/>
+    <result property="personName" column="person_name"/>
+    <result property="personAge" column="person_age"/>
+    <result property="personEmail" column="person_email"/>
+</resultMap>
+```
+
+详细学习：https://mybatis.org/mybatis-3/zh/sqlmap-xml.html
 
 ##### 4.动态sql
 
@@ -217,6 +228,17 @@ set
 </update>
 ```
 
+foreach
+
+```xml
+<select id="getListByIds" resultType="com.example.mybatis_plus.entity.Person">
+    select * from person where person_id in
+    <foreach collection="list" item="item" open="(" close=")" separator="," index="index">
+    #{item}
+    </foreach>
+</select>
+```
+
 详细学习：https://mybatis.org/mybatis-3/zh/dynamic-sql.html
 
 ##### 5.sqlsession
@@ -231,7 +253,7 @@ SqlSession是一个会话，相当于JDBC中的一个Connection对象，是整�
 
 ### mybatis提升
 
-##### 1.spring Mybatis的三种mappers注册方式
+##### 1.Mybatis的三种mappers注册方式
 
 - 第一种注册方式（每一个xml文件都在核心配置文件中注册）
 
@@ -331,3 +353,157 @@ springboot中注册mapper
 - 所有的数据都会先放在一级缓存中
 - 只有当会话提交或关闭时，才会提交到二级缓存中
 - 当 Mybatis 调用 Dao 层查询数据库时，先查询二级缓存，二级缓存中无对应数据，再去查询一级缓存，一级缓存中也没有，最后去数据库查找。
+
+##### 3.分页插件
+
+示例
+
+```xml
+<!--MyBatis分页插件-->
+<dependency>
+    <groupId>com.github.pagehelper</groupId>
+    <artifactId>pagehelper-spring-boot-starter</artifactId>
+    <version>1.4.2</version>
+</dependency>
+```
+
+
+
+```java
+@GetMapping
+public Result getList(Person person, @RequestParam Integer pageNum, @RequestParam Integer pageSize){
+    PageHelper.startPage(pageNum, pageSize);
+    List<Person> list = personMapper.getList(person);
+    PageInfo<Person> info = new PageInfo<>(list);
+    return Result.suc(info);
+}
+```
+
+##### 4.${}和#{}
+
+`#{}`占位符会被解析为**JDBC**中的预编译语句（**Prepared Statement**）中的参数占位符`?`，一个`#{}`会被解析为一个`?`。
+
+`${}`占位符标识的位置会直接被替换为入参，是简单的字符串替换。
+
+\#方式能够很大程度防止sql注入，一般能用#的就别用$，**MyBatis排序时使用order by 动态参数时需要注意，用$而不是#**
+
+##### 5.高级映射
+
+###### 联表查询
+
+1.一对一映射association
+
+```xml
+<resultMap id="personResultMap" type="com.example.mybatis_plus.entity.Person">
+    <id property="personId" column="person_id"/>
+    <result property="personName" column="person_name"/>
+    <result property="personAge" column="person_age"/>
+    <result property="personEmail" column="person_email"/>
+    <association property="user"  javaType="com.example.mybatis_plus.entity.User">
+        <id property="id" column="id"/>
+        <result property="age" column="age"/>
+        <result property="name" column="name"/>
+        <result property="email" column="email"/>
+    </association>
+</resultMap>
+<select id="getList" resultMap="personResultMap"
+        parameterType="com.example.mybatis_plus.entity.Person">
+    <include refid="select1"></include>
+    <where>
+        <if test="personName != null and personName != ''">
+            and person_name like concat('%',#{personName},'%')
+        </if>
+        <if test="personEmail != null and personEmail != ''">
+            and person_email like concat('%',#{personEmail},'%')
+        </if>
+    </where>
+</select>
+```
+
+也可以
+
+```xml
+<resultMap id="personResultMap" type="com.example.mybatis_plus.entity.Person">
+    <id property="personId" column="person_id"/>
+    <result property="personName" column="person_name"/>
+    <result property="personAge" column="person_age"/>
+    <result property="personEmail" column="person_email"/>
+    <association property="user" column="user_id" resultMap="userResultMap">
+    </association>
+</resultMap>
+<resultMap id="userResultMap" type="com.example.mybatis_plus.entity.User">
+    <id property="id" column="id"/>
+    <result property="age" column="age"/>
+    <result property="name" column="name"/>
+    <result property="email" column="email"/>
+</resultMap>
+<select id="getList" resultMap="personResultMap"
+        parameterType="com.example.mybatis_plus.entity.Person">
+    <include refid="select1"></include>
+    <where>
+        <if test="personName != null and personName != ''">
+            and person_name like concat('%',#{personName},'%')
+        </if>
+        <if test="personEmail != null and personEmail != ''">
+            and person_email like concat('%',#{personEmail},'%')
+        </if>
+    </where>
+</select>
+```
+
+sql
+
+```xml
+<sql id="select1">
+    select person_id,
+           person_name,
+           person_age,
+           person_email,
+           u.id,
+           u.age,
+           u.name,
+           u.email
+    from person p
+             left join user u on u.id = p.user_id
+</sql>
+```
+
+```xml
+<resultMap id="personResultMap" type="com.example.mybatis_plus.entity.Person" autoMapping="true">
+</resultMap>
+```
+
+autoMapping="true"没写的自动映射
+
+2.一对多关系，collection，例如一个作者对应多本书，书中需要存储作者id
+
+```xml
+        <!--使用collection属性，ofType为集合内元素的类型-->
+        <collection property="bookList" ofType="dulk.learn.mybatis.pojo.Book" columnPrefix="book_">
+            <id property="id" column="id"/>
+            <result property="name" column="name" />
+            <result property="price" column="price" />
+        </collection>
+```
+
+
+
+###### 嵌套查询
+
+```xml
+<resultMap id="bookResultMap" type="com.example.mybatis_plus.entity.Book" autoMapping="true"> 
+    <association property="user" column="user_id"   select="getUser" fetchType="lazy"/>
+</resultMap>
+<select id="getUser" resultType="com.example.mybatis_plus.entity.User">
+    select * from `user` where id = #{userId}
+</select>
+<select id="getByUserId" resultMap="bookResultMap">
+    select * from book where user_id = #{userId}
+</select>
+```
+
+开启懒加载，局部的加载策略的优先级高于全局的加载策略
+
+```xml
+fetchType="lazy"
+```
