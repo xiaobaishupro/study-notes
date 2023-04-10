@@ -1,4 +1,4 @@
-# Elasticsearch
+## Elasticsearch
 
 ### 1.简介
 
@@ -108,6 +108,8 @@ user``1`  `zhangsan ``18``2`  `kingtl  ``20
 
 > 倒排索引
 
-- elasticsearch使用的是一种成为倒排索引的结构，采用Lucene倒排索作为底层。这种结构适用于快速的全文搜索，一个索引由文档中所有不重复的列表构成，对于每一个词，都有一个包含它的文档列表。例如，现在有两个文档，每个文档包含如下内容：
+- elasticsearch使用的是一种成为倒排索引的结构，采用Lucene倒排索作为底层。这种结构适用于快速的全文搜索，一个索引由文档中所有不重复的列表构成，对于每一个词，都有一个包含它的文档列表。
 
-`Study every day, good good up to forever # 文档``1` `包含的内容``To forever，study every day, good good up  # 文档``2` `包含的内容` `Study every day, good good up to forever # 文档``1`3#`包含的内容``To forever，study every day, good good up  # 文档`6#
+## Elasticsearch整合springboot
+
+博客学习：https://juejin.cn/post/7155004642458337317
