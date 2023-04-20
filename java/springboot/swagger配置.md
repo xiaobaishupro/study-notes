@@ -25,7 +25,7 @@ public class SwaggerConfig {
                 // 配置基本信息
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.xj"))    //这个是重点
+                .apis(RequestHandlerSelectors.basePackage("com.example"))    //这个是重点
                 .paths(PathSelectors.any())
                 .build();
     }
@@ -38,17 +38,16 @@ public class SwaggerConfig {
                 "xj19148@163.com"); // 作者邮箱
         return new ApiInfoBuilder()
                 .title("接口文档") // 标题
-                .description("成为最卷") // 描述
-                .termsOfServiceUrl("https://www.baidu.com") // 跳转连接
+                .description("hello") // 描述
+                .termsOfServiceUrl("--") // 跳转连接
                 .version("1.0") // 版本
-                .license("Swagger-的使用(详细教程)")
+                .license("Swagger-的使用")
                 .licenseUrl("https://gitee.com/a13657926270")
                 .contact(contact)
                 .build();
     }
-
-
 }
+
 ```
 
 文档地址：http://localhost:8080/swagger-ui.html
