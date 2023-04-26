@@ -151,7 +151,7 @@
 - 第三种方式：使用CREATE INDEX命令创建
 
   ```pgsql
-  CREATE INDEX index_name ON table_name (column_list);复制代码
+  CREATE INDEX index_name ON table_name (column_list);
   ```
 
   - CREATE INDEX可对表增加普通索引或UNIQUE索引。（但是，不能创建PRIMARY KEY索引）
@@ -163,7 +163,7 @@
   ```sas
   alter table user_index drop KEY name;
   alter table user_index drop KEY id_card;
-  alter table user_index drop KEY information;复制代码
+  alter table user_index drop KEY information;
   ```
 
 - 删除主键索引：`alter table 表名 drop primary key`（因为主键只有一个）。这里值得注意的是，如果主键自增长，那么不能直接执行此操作（自增长依赖于主键索引）：
