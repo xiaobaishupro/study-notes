@@ -134,13 +134,13 @@ RabbitMQ 与快递站的主要区别在于，它不处理快件而是接收， �
 
 #### 6. RPC模型
 
-![img](https://ask.qcloudimg.com/http-save/yehe-1443828/adf0855debd10dc57818296bcc6ebb7c.png?imageView2/2/w/2560/h/7000)
+![img](images/7000.png)
 
 这种模式需要通知远程计算机运行功能并等待返回运行结果。这个过程是阻塞的。
 
 当客户端启动时，它创建一个匿名独占回调队列。并提供名字为call的函数，这个call会发送RPC请求并且阻塞直到收到RPC运算的结果。
 
-## **💡RabbitMQ环境**
+## **RabbitMQ环境**
 
 ##### windows
 
